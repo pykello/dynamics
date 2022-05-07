@@ -4,10 +4,11 @@
    #include <stdint.h>
    #include <stdio.h>
    #include <time.h>
+   #include <iostream>
 //   #include <x86intrin.h>
    #include "now.h" 
 
-   static const int kIterations = 1000 * 1000000;
+   static const int kIterations = 10 * 1000000;
 
    int main (int argc, const char** argv) {
      uint64_t startcy, stopcy;
@@ -21,8 +22,8 @@
 
      int64_t elapsed = stopcy - startcy;
      double felapsed = elapsed;
-     fprintf(stdout, "%d iterations, %lu cycles, %4.2f cycles/iteration\n",
-             kIterations, elapsed, felapsed / kIterations);
+     std::cout << kIterations << " iterations, " 
+	       << elapsed << " cycles, " << felapsed / kIterations << " cycles/iteration" << std::endl;
      return 0;
    }
 
