@@ -1,7 +1,7 @@
 
 Building and installing the kernel module:
 
-	make
+	make build-module
 	sudo insmod enable_ccr.ko
 	dmesg | tail
 
