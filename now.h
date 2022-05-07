@@ -1,3 +1,24 @@
+#include <linux/module.h>
+#include <linux/kernel.h>
+
+static void enable_ccnt_read(void* data)
+{
+  // PMUSERENR = 1
+  asm volatile ("mcr p15, 0, %0, c9, c14, 0" :: "r"(1));
+
+  // PMCR.E (bit 0) = 1
+  asm volatile ("mcr p15, 0, %0, c9, c12, 0" :: "r"(1));
+
+  // PMCNTENSET.C (bit 31) = 1
+  asm volatile ("mcr p15, 0, %0, c9, c12, 1" :: "r"(1 << 31));
+}
+
+int init_module()
+{
+  on_each_cpu(enable_ccnt_read, NULL, 1);
+  return 0;
+}
+
 // https://github.com/google/benchmark/blob/v1.1.0/src/cycleclock.h#L116
 inline int64_t Now() {
 #if defined(__x86_64__) || defined(__amd64__)
@@ -13,13 +34,7 @@ inline int64_t Now() {
 	uint32_t pmcntenset;
 
 	if (!init) {
-		printf("b1\n");
-		asm volatile ("mcr p15, 0, %0, c9, c14, 0" :: "r" (1));
-		printf("b1a\n");
-		asm volatile ("MCR p15, 0, %0, c9, c12, 0\t\n" :: "r"(1));
-		printf("b1b\n");
-		asm volatile ("MCR p15, 0, %0, c9, c12, 1\t\n" :: "r"(0x80000000));
-		printf("b2c\n");
+		init_module();
 		init = 1;
 	}
 
